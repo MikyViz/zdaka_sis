@@ -1,8 +1,8 @@
 import React from 'react';
 import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
 import { Link } from 'react-router-dom';
-import About from '../pages/About';
-import Contact from '../pages/Contact';
+// import About from '../pages/About';
+// import Contact from '../pages/Contact';
 
   function Login () {
      return(

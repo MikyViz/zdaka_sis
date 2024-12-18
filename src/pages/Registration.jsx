@@ -13,7 +13,7 @@ import {
 from 'mdb-react-ui-kit';
 import '../styles/registration.css';
 
-function App() {
+function Registration() {
   return (
     <MDBContainer fluid className='p-4 background-radial-gradient overflow-hidden'>
 
@@ -95,4 +95,4 @@ function App() {
   );
 }
 
-export default App;
+export default Registration;
