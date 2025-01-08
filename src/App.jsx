@@ -16,7 +16,9 @@ import Login from './components/Login';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Registration from './pages/Registration';
-import SponsorAdd from './pages/SponsorAdd';
+import SideNavbar from './components/SideNavbar';
+import UserForm from './components/UserForm';
+
 
 function App() {
   return (
@@ -27,7 +29,9 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/registration" element={<Registration />} />
-        <Route path="/sponsoradd" element={<SponsorAdd />} />
+        <Route path="/sidenavbar" element={<SideNavbar />} />
+                <Route path="/userform" element={<UserForm />} />
+
       </Routes>
     </Router>
   );

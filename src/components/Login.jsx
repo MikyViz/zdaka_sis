@@ -26,6 +26,23 @@ function Login() {
         </MDBCol>
 
         <MDBCol xs={12} md={6}>
+          <div className="btn-group mb-4" role="group">
+            <button
+              type="button"
+              className="btn btn-secondary active"
+              data-mdb-ripple-init
+            >
+              <span className="fs-5">Manager</span>
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary "
+              data-mdb-ripple-init
+            >
+              <span className="fs-5">Gabbay</span>
+            </button>
+          </div>
+
           <div className="d-flex flex-row align-items-center justify-content-center">
             <p className="lead fw-normal mb-0 me-3">Sign in with</p>
             <MDBBtn floating size="md" tag="a" className="me-2">

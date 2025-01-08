@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+
 import {
   MDBBtn,
   MDBContainer,
@@ -11,9 +14,40 @@ import {
   MDBIcon,
 } from 'mdb-react-ui-kit';
 import '../styles/registration.css';
-import UserForm from '../components/UserForm'
+import SponsorForm from '../components/SponsorForm';
 
 function Registration() {
+  const sponsorFormRef = useRef();
+  const registerReq = async () => {
+    try {
+      const orgId = uuidv4();
+      const formData = sponsorFormRef.current.getFormData();
+      const orgData = {
+        Id: orgId,
+        name: formData.org
+      };
+
+      const managerData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        cellPhone: formData.cellPhone,
+        email: formData.email,
+        password: formData.password,
+        OrganizationId: orgId
+      };
+      console.log(orgData);
+      console.log(managerData);
+      
+      const orgResponse = await axios.post('http://localhost:8080/organizations/', orgData);
+      const managerResponse = await axios.post('http://localhost:8080/users/register', managerData);
+
+      console.log('Response from server:', orgResponse.data);
+      console.log('Response from server:', managerResponse.data);
+    } catch (error) {
+      console.error('Error sending data to server:', error);
+    }
+  };
+
   return (
     <MDBContainer
       fluid
@@ -50,9 +84,54 @@ function Registration() {
             className="position-absolute shadow-5-strong"
           ></div>
 
+          {/*            👇 CARD 👇 */}
+
           <MDBCard className="my-5 bg-glass">
             <MDBCardBody className="p-5">
-                <UserForm/>
+              <SponsorForm ref={sponsorFormRef}/>
+              <MDBBtn className="w-100 mb-4" size="md" onClick={registerReq}>
+                sign up
+              </MDBBtn>
+
+              <div className="text-center">
+                <p>or sign up with:</p>
+
+                <MDBBtn
+                  tag="a"
+                  color="none"
+                  className="mx-3"
+                  style={{ color: '#1266f1' }}
+                >
+                  <MDBIcon fab icon="facebook-f" size="sm" />
+                </MDBBtn>
+
+                <MDBBtn
+                  tag="a"
+                  color="none"
+                  className="mx-3"
+                  style={{ color: '#1266f1' }}
+                >
+                  <MDBIcon fab icon="x-twitter" size="sm" />
+                </MDBBtn>
+
+                <MDBBtn
+                  tag="a"
+                  color="none"
+                  className="mx-3"
+                  style={{ color: '#1266f1' }}
+                >
+                  <MDBIcon fab icon="google" size="sm" />
+                </MDBBtn>
+
+                <MDBBtn
+                  tag="a"
+                  color="none"
+                  className="mx-3"
+                  style={{ color: '#1266f1' }}
+                >
+                  <MDBIcon fab icon="linkedin-in" size="sm" />
+                </MDBBtn>
+              </div>
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

@@ -30,6 +30,7 @@ export default function UserForm() {
           <MDBCol md="4">
             <MDBInput id="city" label="City" />
           </MDBCol>
+          {/*           // TODO: Add neighborhood form */}
           <MDBCol md="4">
             <MDBInput id="street" label="Street" />
           </MDBCol>
