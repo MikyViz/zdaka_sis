@@ -1,0 +1,10 @@
+.wrapper {
+    background-color: rgb(175, 170, 211);
+    background-image: url(../assets/welcome_26022c.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100vw;
+    /* Сделать ширину равной ширине окна */
+    height: 100vh;
+}

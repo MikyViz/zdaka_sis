@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import '../styles/sideNavbar.css';
-import logoPH from '../../public/your-logo-goes-here.gif';
+import { Link } from 'react-router-dom';
+import logoPH from '../assets/your-logo-goes-here.gif';
 
 export default function Sidebar(props) {
   return (
@@ -56,7 +57,7 @@ export default function Sidebar(props) {
               <span className="fs-4">עמוד ראשי </span>
             </a>
             <a
-              href="#"
+              href="/acount/contacts"
               className="list-group-item list-group-item-action px-3 border-0"
             >
               <i className="bi bi-person-rolodex fs-2"></i>

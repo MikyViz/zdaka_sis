@@ -11,9 +11,9 @@ import {
   MDBBtnGroup,
 } from 'mdb-react-ui-kit';
 
-export default function UserForm() {
+export default function ContactsForm(props) {
   return (
-    <MDBContainer fluid className="p-4 bg-light bg-gradient overflow-hidden">
+    <MDBContainer fluid className = {`${props.styleClass} p-4 bg-light bg-gradient overflow-hidden`}>
       <form>
         <MDBRow className="mb-3">
           <MDBCol md="6">

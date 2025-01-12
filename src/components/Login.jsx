@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+
 import {
   MDBContainer,
   MDBCol,
@@ -10,10 +12,37 @@ import {
 } from 'mdb-react-ui-kit';
 import { Link } from 'react-router-dom';
 import '../styles/login.css';
-// import About from '../pages/About';
-// import Contact from '../pages/Contact';
 
 function Login() {
+const [userData, setUserData] = useState({
+  email: '',
+  password: ''
+});
+
+const formChange = (e)=>{
+  const { id, value } = e.target;
+  setUserData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+}
+
+const loginReq = async () => {
+  console.log('lol');
+  console.log(userData);
+  
+  try {
+    const loginResponse = await axios.post('http://localhost:8080/users/login/', userData);
+    console.log(`Server response 👉 ${loginResponse}`);
+    
+  } catch (error) {
+    alert(`Email or password isn't correct`);
+    console.log(error);
+    
+  }
+  
+}
+
   return (
     <MDBContainer fluid className="p-3 my-5 h-custom">
       <MDBRow>
@@ -26,22 +55,6 @@ function Login() {
         </MDBCol>
 
         <MDBCol xs={12} md={6}>
-          <div className="btn-group mb-4" role="group">
-            <button
-              type="button"
-              className="btn btn-secondary active"
-              data-mdb-ripple-init
-            >
-              <span className="fs-5">Manager</span>
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary "
-              data-mdb-ripple-init
-            >
-              <span className="fs-5">Gabbay</span>
-            </button>
-          </div>
 
           <div className="d-flex flex-row align-items-center justify-content-center">
             <p className="lead fw-normal mb-0 me-3">Sign in with</p>
@@ -66,15 +79,17 @@ function Login() {
           <MDBInput
             wrapperClass="mb-4"
             label="Email address"
-            id="emailInput"
+            id="email"
             type="email"
+            onChange={formChange}
             size="lg"
           />
           <MDBInput
             wrapperClass="mb-4"
             label="Password"
-            id="passwordInput"
+            id="password"
             type="password"
+            onChange={formChange}
             size="lg"
           />
 
@@ -85,18 +100,18 @@ function Login() {
               id="flexCheckDefault"
               label="Remember me"
             />
-            <a href="!#">Forgot password?</a>
+           <Link to="!#">Forgot password?</Link>
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
-            <MDBBtn className="mb-0 px-5" size="lg">
+            <MDBBtn className="mb-0 px-5" size="lg" onClick={loginReq}>
               Login
             </MDBBtn>
             <p className="small fw-bold mt-2 pt-1 mb-2">
               Don't have an account?{' '}
-              <a href="/registration" className="link-danger">
+             <Link to="/registration" className="link-danger">
                 Register
-              </a>
+              </Link>
             </p>
           </div>
         </MDBCol>

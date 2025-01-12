@@ -9,7 +9,7 @@ import {
   MDBBtn,
 } from 'mdb-react-ui-kit';
 
-const SponsorForm = forwardRef((props, ref) => {
+const RegisretForm = forwardRef((props, ref) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -118,4 +118,4 @@ const SponsorForm = forwardRef((props, ref) => {
     </form>
   );
 })
-export default SponsorForm
+export default RegisretForm

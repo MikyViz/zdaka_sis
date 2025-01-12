@@ -14,14 +14,14 @@ import {
   MDBIcon,
 } from 'mdb-react-ui-kit';
 import '../styles/registration.css';
-import SponsorForm from '../components/SponsorForm';
+import RegisterForm from '../components/RegisterForm';
 
 function Registration() {
-  const sponsorFormRef = useRef();
+  const registerFormRef = useRef();
   const registerReq = async () => {
     try {
       const orgId = uuidv4();
-      const formData = sponsorFormRef.current.getFormData();
+      const formData = registerFormRef.current.getFormData();
       const orgData = {
         Id: orgId,
         name: formData.org
@@ -88,7 +88,7 @@ function Registration() {
 
           <MDBCard className="my-5 bg-glass">
             <MDBCardBody className="p-5">
-              <SponsorForm ref={sponsorFormRef}/>
+              <RegisterForm ref={registerFormRef}/>
               <MDBBtn className="w-100 mb-4" size="md" onClick={registerReq}>
                 sign up
               </MDBBtn>
