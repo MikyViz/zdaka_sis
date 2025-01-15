@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useImperativeHandle, forwardRef } from 'react';
 import {
   MDBRow,
   MDBCol,
@@ -11,94 +11,105 @@ import {
   MDBBtnGroup,
 } from 'mdb-react-ui-kit';
 
-export default function ContactsForm(props) {
+const ContactForm = function (props) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    country: '',
+    city: '',
+    street: '',
+    houseNum: '',
+    apt: '',
+    email: '',
+    floor: '',
+    cellPhone: '',
+    number: '',
+    isActive: false,
+    instructions: '',
+    additionalInfo: '',
+  });
+
+  const handleChange = (e) => {
+    const { id, value, checked, type } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: type === 'checkbox' ? !checked : value,    }));
+    console.log(formData);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    props.req(formData);
+  };
+
   return (
-    <MDBContainer fluid className = {`${props.styleClass} p-4 bg-light bg-gradient overflow-hidden`}>
+    <MDBContainer fluid className={`${props.styleClass} p-4 bg-light bg-gradient overflow-hidden`}>
       <form>
         <MDBRow className="mb-3">
           <MDBCol md="6">
-            <MDBInput id="first-name" label="First name" />
+            <MDBInput id="firstName" label="First name" onChange={handleChange} />
           </MDBCol>
           <MDBCol md="6">
-            <MDBInput id="last-name" label="Last name" />
+            <MDBInput id="lastName" label="Last name" onChange={handleChange} />
           </MDBCol>
         </MDBRow>
         <MDBRow className="mb-3">
           <MDBCol md="4">
-            <MDBInput id="country" label="Country" />
+            <MDBInput id="country" label="Country" onChange={handleChange} />
           </MDBCol>
           <MDBCol md="4">
-            <MDBInput id="city" label="City" />
+            <MDBInput id="city" label="City" onChange={handleChange} />
           </MDBCol>
           {/*           // TODO: Add neighborhood form */}
           <MDBCol md="4">
-            <MDBInput id="street" label="Street" />
+            <MDBInput id="street" label="Street" onChange={handleChange} />
           </MDBCol>
         </MDBRow>
         <MDBRow className="mb-3">
           <MDBCol md="4">
-            <MDBInput id="house-number" label="House Number" />
+            <MDBInput id="houseNum" label="House Number" onChange={handleChange} />
           </MDBCol>
           <MDBCol md="4">
-            <MDBInput id="apartment-number" label="Apartment Number" />
+            <MDBInput id="apt" label="Apartment Number" onChange={handleChange} />
           </MDBCol>
           <MDBCol md="4">
-            <MDBInput id="floor" label="Floor" />
+            <MDBInput id="floor" label="Floor" onChange={handleChange} />
           </MDBCol>
         </MDBRow>
         <MDBRow className="mb-3">
           <MDBCol md="6">
-            <MDBInput type="email" id="email" label="Email" />
+            <MDBInput type="email" id="email" label="Email" onChange={handleChange} />
           </MDBCol>
           <MDBCol md="6">
-            <MDBInput type="tel" id="phone" label="Phone" />
+            <MDBInput type="tel" id="cellPhone" label="Phone" onChange={handleChange} />
           </MDBCol>
         </MDBRow>
         <MDBRow className="mb-3">
-          <MDBCol md="12">
-            <MDBSwitch defaultChecked id="is-active" label="Is active" />
+          <MDBCol md="3">
+          {/* //TODO repair */}
+            <MDBSwitch id="isActive" label="Is active" onChange={handleChange} /> 
+          </MDBCol>
+          <MDBCol md="3" className="form-outline" data-mdb-input-init style={{ maxWidth: "150px" }}>
+            <MDBInput type="number" label="Number" id="number" className="form-control" onChange={handleChange} />
           </MDBCol>
         </MDBRow>
-        <MDBBtnGroup className="mb-3">
-          <MDBRadio
-            btn
-            btnColor="secondary"
-            id="pay-program-1"
-            name="options"
-            wrapperTag="span"
-            label="Pay program 1"
-          />
-          <MDBRadio
-            btn
-            btnColor="secondary"
-            id="pay-program-2"
-            name="options"
-            wrapperClass="mx-2"
-            wrapperTag="span"
-            label="Pay program 2"
-          />
-          <MDBRadio
-            btn
-            btnColor="secondary"
-            id="pay-program-3"
-            name="options"
-            wrapperTag="span"
-            label="Pay program 3"
-          />
-        </MDBBtnGroup>
-        <MDBInput className="mb-3" id="instructions" label="Instructions" />
+
+        <MDBInput className="mb-3" id="instructions" label="Instructions" onChange={handleChange} />
         <MDBInput
           wrapperClass="mb-4"
-          textarea
-          id="additional-info"
+          type='textarea'
+          id="additionalInfo"
           rows={4}
           label="Additional information"
+          onChange={handleChange}
         />
 
-        <MDBBtn className="mb-4" type="submit" block>
-          Create an account
+        <MDBBtn className="mb-4" block onClick={handleSubmit}>
+          {props.btnText}
         </MDBBtn>
       </form>
     </MDBContainer>
   );
-}
+};
+
+export default ContactForm

@@ -12,4 +12,5 @@
 
 .pulsing-button {
   animation: pulse 2s infinite;
+  position: absolute;
 }

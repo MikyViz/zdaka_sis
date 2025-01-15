@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import {
@@ -10,38 +10,51 @@ import {
   MDBInput,
   MDBCheckbox,
 } from 'mdb-react-ui-kit';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import '../styles/login.css';
 
 function Login() {
-const [userData, setUserData] = useState({
-  email: '',
-  password: ''
-});
+const navigate = useNavigate();
 
-const formChange = (e)=>{
-  const { id, value } = e.target;
-  setUserData((prevData) => ({
+  const [userData, setUserData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const [error, setError] = useState(false);
+
+  const formChange = (e) => {
+    const { id, value } = e.target;
+    setUserData((prevData) => ({
       ...prevData,
       [id]: value,
     }));
-}
-
-const loginReq = async () => {
-  console.log('lol');
-  console.log(userData);
-  
-  try {
-    const loginResponse = await axios.post('http://localhost:8080/users/login/', userData);
-    console.log(`Server response 👉 ${loginResponse}`);
-    
-  } catch (error) {
-    alert(`Email or password isn't correct`);
-    console.log(error);
-    
   }
-  
-}
+
+useEffect(() => {
+        const token = localStorage.getItem('token');
+         if (token) {
+          navigate('/account');
+        }
+      }, [navigate]);
+
+
+  const loginReq = async () => {
+
+    try {
+      const loginResponse = await axios.post('http://localhost:8080/users/login/', userData);
+      setError(false);
+      console.log(`Server response 👉 ${loginResponse}`);
+      localStorage.setItem(`token`, loginResponse.data.token);
+      navigate('/account');
+      
+
+    } catch (error) {
+      console.log(error);
+      setError(true);
+    }
+
+  }
 
   return (
     <MDBContainer fluid className="p-3 my-5 h-custom">
@@ -100,7 +113,7 @@ const loginReq = async () => {
               id="flexCheckDefault"
               label="Remember me"
             />
-           <Link to="!#">Forgot password?</Link>
+            <Link to="!#">Forgot password?</Link>
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
@@ -109,13 +122,17 @@ const loginReq = async () => {
             </MDBBtn>
             <p className="small fw-bold mt-2 pt-1 mb-2">
               Don't have an account?{' '}
-             <Link to="/registration" className="link-danger">
+              <Link to="/registration" className="link-danger">
                 Register
               </Link>
             </p>
           </div>
         </MDBCol>
       </MDBRow>
+
+      {error && (<div className="alert alert-danger" role="alert">
+        Email or password isn't correct, check it out!
+      </div>)}
 
       <div className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
         <div className="text-white mb-3 mb-md-0">
@@ -157,14 +174,6 @@ const loginReq = async () => {
           </MDBBtn>
         </div>
       </div>
-
-      {/*       <nav> */}
-      {/*             <ul> */}
-      {/*                 <li><Link to="/">Home</Link></li> */}
-      {/*                 <li><Link to="/about">About</Link></li> */}
-      {/*                 <li><Link to="/contact">Contact</Link></li> */}
-      {/*             </ul> */}
-      {/*            </nav> */}
     </MDBContainer>
   );
 }
