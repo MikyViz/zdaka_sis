@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,6 +19,7 @@ import RegisterForm from '../components/RegisterForm';
 
 function Registration() {
   const registerFormRef = useRef();
+  const navigate = useNavigate();
   const registerReq = async () => {
     try {
       const orgId = uuidv4();
@@ -33,16 +35,19 @@ function Registration() {
         cellPhone: formData.cellPhone,
         email: formData.email,
         password: formData.password,
-        OrganizationId: orgId
+        OrganizationId: orgId,
+        isManager: true
       };
       console.log(orgData);
       console.log(managerData);
       
       const orgResponse = await axios.post('http://localhost:8080/organizations/', orgData);
       const managerResponse = await axios.post('http://localhost:8080/users/register', managerData);
+      localStorage.setItem("token", managerResponse.data.token);
+      navigate('/account');
 
-      console.log('Response from server:', orgResponse.data);
-      console.log('Response from server:', managerResponse.data);
+      console.log('orgResponse from server:', orgResponse.data);
+      console.log('managerResponse from server:', managerResponse.data);
     } catch (error) {
       console.error('Error sending data to server:', error);
     }

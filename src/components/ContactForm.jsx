@@ -24,7 +24,7 @@ const ContactForm = function (props) {
     floor: '',
     cellPhone: '',
     number: '',
-    isActive: false,
+    isActive: false, //TODO in DB it's not bool & it's named 'status'
     instructions: '',
     additionalInfo: '',
   });
@@ -33,9 +33,11 @@ const ContactForm = function (props) {
     const { id, value, checked, type } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [id]: type === 'checkbox' ? !checked : value,    }));
+      [id]: type === 'checkbox' ? checked : value,   
+    
+    }));
+    };
     console.log(formData);
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();

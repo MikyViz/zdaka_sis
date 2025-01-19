@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import '../styles/sideNavbar.css';
@@ -7,13 +7,16 @@ import logoPH from '../assets/your-logo-goes-here.gif';
 
 export default function Sidebar(props) {
   const navigate = useNavigate();
+  const [openContacts, setOpenContacts] = useState(false);
 
   const logout = (e) => {
     e.stopPropagation()
     localStorage.removeItem('token')
     navigate('/')
-
   }
+
+  const toggleContacts = () => setOpenContacts(!openContacts);
+
   return (
     <div id="sideNavbar" className="d-flex flex-column align-items-center">
       <button
@@ -62,19 +65,33 @@ export default function Sidebar(props) {
               <i className="fa fa-sign-out fa-2x" aria-hidden="true"></i> התנתקות
             </p>
             <Link
-              to="#"
+              to="/account"
               className="list-group-item list-group-item-action px-3 border-0"
             >
               <i className="bi bi-house-door fs-2"></i>
               <span className="fs-4">עמוד ראשי </span>
             </Link>
-            <Link
-              to="/account/contacts"
+            <div
               className="list-group-item list-group-item-action px-3 border-0"
-            >
+              onClick={toggleContacts}>
               <i className="bi bi-person-rolodex fs-2"></i>
               <span className="fs-4"> אנשי קשר </span>
-            </Link>
+              {openContacts && (<div>
+                <Link
+                  to="/account/contacts"
+                  className="list-group-item list-group-item-action px-3 border-0"
+                >
+                  איש קשר חדש
+                </Link>
+                <Link
+                  to="#"
+                  className="list-group-item list-group-item-action px-3 border-0"
+                >
+                  רשימת אנשי קשר
+                </Link>
+              </div>)}
+            </div>
+
             <Link
               to="#"
               className="list-group-item list-group-item-action px-3 border-0"
