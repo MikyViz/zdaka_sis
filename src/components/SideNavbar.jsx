@@ -84,7 +84,7 @@ export default function Sidebar(props) {
                   איש קשר חדש
                 </Link>
                 <Link
-                  to="#"
+                  to="/account/contactslist"
                   className="list-group-item list-group-item-action px-3 border-0"
                 >
                   רשימת אנשי קשר

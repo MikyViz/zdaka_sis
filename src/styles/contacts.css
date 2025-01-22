@@ -8,3 +8,20 @@
     /* Сделать ширину равной ширине окна */
     height: 100vh;
 }
+
+.card {
+    transition: transform 0.2s ease-in-out;
+     width: 18rem;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .card-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  

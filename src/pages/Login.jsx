@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+
 import axios from 'axios';
 
 import {
@@ -10,11 +11,16 @@ import {
   MDBInput,
   MDBCheckbox,
 } from 'mdb-react-ui-kit';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/login.css';
-
+import { GlobalStateContext } from '../GlobalStateProvider';
 function Login() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { globalState, setGlobalState } = useContext(GlobalStateContext);
+
+  const updateUser = (user) => { setGlobalState(prevState => (
+    { ...prevState, user }
+  )); };
 
   const [userData, setUserData] = useState({
     email: '',
@@ -31,12 +37,12 @@ const navigate = useNavigate();
     }));
   }
 
-useEffect(() => {
-        const token = localStorage.getItem('token');
-         if (token) {
-          navigate('/account');
-        }
-      }, [navigate]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/account');
+    }
+  }, [navigate]);
 
 
   const loginReq = async () => {
@@ -44,10 +50,11 @@ useEffect(() => {
     try {
       const loginResponse = await axios.post('http://localhost:8080/users/login/', userData);
       setError(false);
-      console.log(`Server response 👉 ${loginResponse}`);
+      console.log(`Server response 👉 ${loginResponse.data}`);
+      // updateUser(loginResponse.data)
       localStorage.setItem(`token`, loginResponse.data.token);
       navigate('/account');
-      
+
 
     } catch (error) {
       console.log(error);

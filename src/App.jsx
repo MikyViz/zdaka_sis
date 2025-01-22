@@ -10,6 +10,7 @@ import ContactForm from './components/ContactForm';
 import Contacts from './pages/Contacts';
 import Account from './pages/Account';
 import Dashboard from './pages/Dashboard';
+import ContactsList from './pages/ContactsList';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/account" element={<Account />}>
           <Route index element={<Dashboard />} />
           <Route path="contacts" element={<Contacts />} />
+          <Route path="contactslist" element={<ContactsList />} />
         </Route>
 
       </Routes>
