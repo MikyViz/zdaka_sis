@@ -10,8 +10,11 @@
 }
 
 .card {
-    transition: transform 0.2s ease-in-out;
+    /* transition: transform 0.2s ease-in-out; */
+    transition: transform 0.2s ease-in-out, max-height 0.2s ease-in-out;
      width: 18rem;
+     max-height: 170px; /* Зафиксированная максимальная высота */
+     /* overflow: hidden; */
   }
   
   .card:hover {
@@ -24,4 +27,12 @@
     gap: 20px;
     justify-content: center;
   }
+
+  .card.expanded {
+    max-height: 500px; /* Максимальная высота для отображения дополнительной информации */
+  }
+
+  .overflow-y-scroll { max-height: 100px; overflow-y: auto; }
+
+  .badge { margin-right: 0.5rem; }
   
