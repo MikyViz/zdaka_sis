@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   MDBRow,
   MDBCol,
@@ -10,12 +10,19 @@ import {
   MDBRadio,
   MDBBtnGroup,
 } from 'mdb-react-ui-kit';
+import { GlobalStateContext } from '../GlobalStateProvider';
+// import { Link, useNavigate } from 'react-router-dom';
+// const navigate = useNavigate();
 
 const ContactForm = function (props) {
+  const { globalState, setGlobalState } = useContext(GlobalStateContext);
   const [formData, setFormData] = useState({
     Id: '',
+    degree: '',
     firstName: '',
     lastName: '',
+    isGabbay: '',
+    isManager: '',
     country: '',
     city: '',
     street: '',
@@ -24,7 +31,7 @@ const ContactForm = function (props) {
     email: '',
     floor: '',
     cellPhone: '',
-    number: '',
+    num: '',
     isActive: false,
     instructions: '',
     additionalInfo: '',
@@ -34,8 +41,11 @@ const ContactForm = function (props) {
     if (props.user) {
       setFormData({
         Id: props.user.Id || '',
+        degree: props.user.degree || '',
         firstName: props.user.firstName || '',
         lastName: props.user.lastName || '',
+        isGabbay: props.user.isGabbay || false,
+        isManager: props.user.isManager || false,
         country: props.user.country || '',
         city: props.user.city || '',
         street: props.user.street || '',
@@ -44,7 +54,7 @@ const ContactForm = function (props) {
         email: props.user.email || '',
         floor: props.user.floor || '',
         cellPhone: props.user.cellPhone || '',
-        number: props.user.number || '',
+        num: props.user.num || null,
         isActive: props.user.isActive || false,
         instructions: props.user.instructions || '',
         additionalInfo: props.user.additionalInfo || '',
@@ -62,16 +72,13 @@ const ContactForm = function (props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // if (props.user)
-    //   props.req(props.user)
-    // else
-      props.req(formData);
+    props.req(formData);
   };
 
   return (
     <MDBContainer fluid className={`${props.styleClass} p-4 bg-light bg-gradient overflow-hidden`}>
       <form>
-        <MDBRow className="mb-3"> 
+        <MDBRow className="mb-3">
           {/* TODO Добавить поле с обращением */}
           <MDBCol md="6">
             <MDBInput id="firstName" label="First name" value={formData.firstName} onChange={handleChange} />
@@ -115,9 +122,12 @@ const ContactForm = function (props) {
           <MDBCol md="3">
             <MDBSwitch id="isActive" label="Is active" checked={formData.isActive} onChange={handleChange} />
           </MDBCol>
-          <MDBCol md="3" className="form-outline" data-mdb-input-init style={{ maxWidth: "150px" }}>
-            <MDBInput type="number" label="Number" id="number" className="form-control" value={formData.number} onChange={handleChange} />
-          </MDBCol>
+          {globalState.user.isManager && <MDBCol md="3">
+            <MDBSwitch id="isGabbay" label="Is gabbay" checked={formData.isGabbay} onChange={handleChange} />
+          </MDBCol>}
+          {globalState.user.isGabbay && <MDBCol md="3" className="form-outline" data-mdb-input-init style={{ maxWidth: "150px" }}>
+            <MDBInput type="number" label="Number" id="num" className="form-control" value={formData.number} onChange={handleChange} />
+          </MDBCol>}
         </MDBRow>
         <MDBInput className="mb-3" id="instructions" label="Instructions" value={formData.instructions} onChange={handleChange} />
         <MDBInput

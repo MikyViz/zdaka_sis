@@ -8,4 +8,6 @@
         2.1.1 Прописать условие для всех елементов - "если менеджер"
         2.1.2 Если Габай - рендер юзер.нам
         2.1.3 In BE create node betwen contact to gabay.
-            2.1.3.1 meny to meny.
+            2.1.3.1 meny to meny.✅
+            2.1.3.2 routs, controllers, services.✅
+        2.1.4 In BE set a password for a new gabay on his cellNum.

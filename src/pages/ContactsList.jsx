@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Button } from 'react-bootstrap'; 
+import { Modal, Button, Form } from 'react-bootstrap';
 import ContactForm from '../components/ContactForm'
 import '../styles/contacts.css'
 import { GlobalStateContext } from "../GlobalStateProvider";
@@ -9,18 +9,39 @@ export default function ContactsList() {
   const { globalState, setGlobalState, getData } = useContext(GlobalStateContext);
   const [list, setList] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedGabbay, setSelectedGabbay] = useState(''); // Добавляем состояние для выбранного габая
+  const [selectedUser, setSelectedUser] = useState('');
 
   const editPutReq = async (user) => {
     try {
       const putResponse = await axios.put(`http://localhost:8080/users/${user.Id}`,
         user,
         { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } })
-      console.log('Response from server:', putResponse?.data);}
-      catch (error) {
-        console.error('Error sending data to server:', error);
-      }
+      console.log('Response from server:', putResponse?.data);
     }
+    catch (error) {
+      console.error('Error sending data to server:', error);
+    }
+  };
+
+  const assignGabbay = async () => {
+    try {
+      const response = await axios.post('http://localhost:8080/users/assign-gabbay', {
+        gabbayId: selectedGabbay,
+        userId: selectedUser,
+      }, {
+        headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, }
+      });
+      console.log('Response from server:', response?.data);
+      setShowAssignModal(false);
+      setSelectedGabbay('');
+      setSelectedUser('');
+    } catch (error) {
+      console.error('Error assigning user to gabbay:', error);
+    }
+  };
 
   useEffect(() => {
     if (!globalState.user || !globalState.org) { getData(); }
@@ -90,6 +111,7 @@ export default function ContactsList() {
       </div>}
       {globalState.user && (
         <div className="card-wrapper">
+          <Button onClick={() => setShowAssignModal(true)}>Assign User to Gabbay</Button>
           {list.map((user, index) => (
             <div key={index} className={`card p-3 m-3 ${user.show ? 'expanded' : ''}`} onClick={() => shower(index)}>
               <div className="d-flex justify-content-between align-items-center">
@@ -101,10 +123,10 @@ export default function ContactsList() {
                 </h3>
                 <div>
                   <Button variant="link" onClick={(e) => { e.stopPropagation(); handleEditClick(user); }}>
-                    <i className="bi bi-pencil-square"></i>
+                    <i className="bi bi-pencil-square fs-5"></i>
                   </Button>
                   <Button variant="link" onClick={(e) => { e.stopPropagation(); handleDeleteClick(user.Id); }}>
-                    <i className="bi bi-trash"></i>
+                    <i className="bi bi-trash fs-5"></i>
                   </Button>
                 </div>
               </div>
@@ -137,6 +159,55 @@ export default function ContactsList() {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {showAssignModal && (
+        <Modal show={showAssignModal} onHide={() => setShowAssignModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Assign User to Gabbay</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="formGabbay">
+                <Form.Label>Select Gabbay</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={selectedGabbay}
+                  onChange={(e) => setSelectedGabbay(e.target.value)}
+                >
+                  <option value="">Select Gabbay</option>
+                  {list.filter(user => user.isGabbay).map((gabbay) => (
+                    <option key={gabbay.Id} value={gabbay.Id}>
+                      {`${gabbay.firstName} ${gabbay.lastName}`}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formUser" className="mt-3">
+                <Form.Label>Select User</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={selectedUser}
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                >
+                  <option value="">Select User</option>
+                  {list.filter(user => !user.isGabbay).map((user) => (
+                    <option key={user.Id} value={user.Id}>
+                      {`${user.firstName} ${user.lastName}`}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Button variant="primary" className="mt-3" onClick={assignGabbay}>
+                Assign
+              </Button>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowAssignModal(false)}>
               Close
             </Button>
           </Modal.Footer>
