@@ -44,7 +44,7 @@ export default function Contacts() {
        {itsOK && (<div className="alert alert-success w-75 fs-3" role="alert">
           The contact was added successfull! 🎉🎉
         </div>)}
-        {isntOK && (<div class="alert alert-danger w-75 fs-3" role="alert">
+        {isntOK && (<div className="alert alert-danger w-75 fs-3" role="alert">
           Something go wrong, bro...😥
         </div>)}
     </div>)

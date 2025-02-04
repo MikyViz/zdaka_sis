@@ -21,8 +21,9 @@ const ContactForm = function (props) {
     degree: '',
     firstName: '',
     lastName: '',
-    isGabbay: '',
-    isManager: '',
+    isGabbay: false,
+    isManager: false,
+    password: '',
     country: '',
     city: '',
     street: '',
@@ -31,7 +32,7 @@ const ContactForm = function (props) {
     email: '',
     floor: '',
     cellPhone: '',
-    num: '',
+    num: null,
     isActive: false,
     instructions: '',
     additionalInfo: '',
@@ -46,6 +47,7 @@ const ContactForm = function (props) {
         lastName: props.user.lastName || '',
         isGabbay: props.user.isGabbay || false,
         isManager: props.user.isManager || false,
+        password: '',
         country: props.user.country || '',
         city: props.user.city || '',
         street: props.user.street || '',
@@ -118,6 +120,18 @@ const ContactForm = function (props) {
             <MDBInput type="tel" id="cellPhone" label="Phone" value={formData.cellPhone} onChange={handleChange} />
           </MDBCol>
         </MDBRow>
+        {(props.user.Id === globalState.user.Id) && <MDBRow>
+          <MDBCol>
+            <MDBInput
+              wrapperClass="mb-4"
+              label="Password"
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </MDBCol>
+        </MDBRow>}
         <MDBRow className="mb-3">
           <MDBCol md="3">
             <MDBSwitch id="isActive" label="Is active" checked={formData.isActive} onChange={handleChange} />

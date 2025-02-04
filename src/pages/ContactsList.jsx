@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
-import { Modal, Button, Form } from 'react-bootstrap';
-import ContactForm from '../components/ContactForm'
-import '../styles/contacts.css'
+import { Modal, Button, Form, Row, Col, Card, Badge, Spinner } from 'react-bootstrap';
+import ContactForm from '../components/ContactForm';
+import '../styles/contacts.css';
 import { GlobalStateContext } from "../GlobalStateProvider";
 
 export default function ContactsList() {
@@ -11,14 +11,14 @@ export default function ContactsList() {
   const [showModal, setShowModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [selectedGabbay, setSelectedGabbay] = useState(''); // Добавляем состояние для выбранного габая
+  const [selectedGabbay, setSelectedGabbay] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
 
   const editPutReq = async (user) => {
     try {
       const putResponse = await axios.put(`http://localhost:8080/users/${user.Id}`,
         user,
-        { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } })
+        { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
       console.log('Response from server:', putResponse?.data);
     }
     catch (error) {
@@ -44,20 +44,37 @@ export default function ContactsList() {
   };
 
   useEffect(() => {
-    if (!globalState.user || !globalState.org) { getData(); }
+    if (!globalState.user || !globalState.org) {
+      getData();
+    }
     else {
       const allUsersReq = async () => {
         try {
-          const orgUserResponse = await axios.get(`http://localhost:8080/orgsUsers/${globalState.user.orgId}`,
-            { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } })
-          console.log('Response from server:', orgUserResponse?.data);
           const newList = [];
-          for (const orgUser of orgUserResponse.data) {
-            const usersOfOrgResponse = await axios.get(`http://localhost:8080/users/${orgUser.UserId}`,
-              { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } }
-            );
-            usersOfOrgResponse.data.show = false;
-            newList.push(usersOfOrgResponse.data);
+          if (globalState.user.isManager) {
+            // const orgUserResponse = await axios.get(`http://localhost:8080/orgsUsers/${globalState.user.orgId}`,
+            //   { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
+            // console.log('Response from server:', orgUserResponse?.data);
+            // for (const orgUser of orgUserResponse.data) {
+            //   const usersOfOrgResponse = await axios.get(`http://localhost:8080/users/${orgUser.UserId}`,
+            //     { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } }
+            //   );
+            //   usersOfOrgResponse.data.show = false;
+            //   newList.push(usersOfOrgResponse.data);
+            // }
+
+            const orgUserResponse = await axios.get(`http://localhost:8080/users/manager-contacts/${globalState.org}`,
+              { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
+            console.log('Response from server:', orgUserResponse?.data);
+            orgUserResponse.data.forEach((user) => {
+              user.show = false;
+              newList.push(user);
+            });
+
+          }
+          if (globalState.user.isGabbay) {
+            const assignedUsersResponse = await axios.get(`http://localhost:8080/users/assign-gabbay/${globalState.user.Id}`, { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
+            newList.push(...assignedUsersResponse.data);
           }
           setList(newList);
           return newList;
@@ -68,7 +85,7 @@ export default function ContactsList() {
       };
       allUsersReq();
     }
-  }, [globalState.user, globalState.org])
+  }, [globalState.user, globalState.org]);
 
   const shower = (index) => {
     setList(prevList => {
@@ -79,7 +96,6 @@ export default function ContactsList() {
       return newList;
     });
   };
-
 
   const handleEditClick = (user) => {
     setCurrentUser(user);
@@ -105,48 +121,63 @@ export default function ContactsList() {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center justify-content-center vh-100" style={{ background: 'rgb(175, 170, 211)' }}>
-      {!globalState.user && <div className="spinner-border" role="status">
+    <div className="container-fluid" style={{ background: 'rgb(175, 170, 211)', minHeight: '100vh' }}>
+      {!globalState.user && <Spinner animation="border" role="status" className="d-flex justify-content-center align-items-center">
         <span className="visually-hidden">Loading...</span>
-      </div>}
+      </Spinner>}
       {globalState.user && (
-        <div className="card-wrapper">
-          <Button onClick={() => setShowAssignModal(true)}>Assign User to Gabbay</Button>
-          {list.map((user, index) => (
-            <div key={index} className={`card p-3 m-3 ${user.show ? 'expanded' : ''}`} onClick={() => shower(index)}>
-              <div className="d-flex justify-content-between align-items-center">
-                <h3>{user.degree || ''} {`${user.firstName} ${user.lastName}`}
-                  {user.isGabbay && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
-                    Gabbay
-                    <span className="visually-hidden">isGabbay</span>
-                  </span>}
-                </h3>
-                <div>
-                  <Button variant="link" onClick={(e) => { e.stopPropagation(); handleEditClick(user); }}>
-                    <i className="bi bi-pencil-square fs-5"></i>
-                  </Button>
-                  <Button variant="link" onClick={(e) => { e.stopPropagation(); handleDeleteClick(user.Id); }}>
-                    <i className="bi bi-trash fs-5"></i>
-                  </Button>
-                </div>
-              </div>
-              {user.show && <>{user.email && <p>{user.email}</p>}
-                {user.cellPhone && <p>{user.cellPhone}</p>}
-                {user.homePhone && <p>{user.homePhone}</p>}
-                {(user.street || user.houseNum || user.apt) && <p>{`${user.street || ''} ${user.houseNum || ''}/${user.apt || ''} ${user.flore || ''}${user.flore ? '-th flore' : ''}`}</p>}
-                {(user.neighborhood || user.city || user.country) && <p>{`${user.neighborhood || ''}, ${user.city || ''}, ${user.country || ''}`}</p>}
-                {user.instructions && <div className="overflow-y-scroll">{user.instructions}</div>}
-              </>}
-              <div className="d-flex flex-row align-items-center mt-2">
-                {user.isManager && <span className="badge bg-primary">Manager</span>}
-                {user.isActive && <span className="badge bg-success">Active</span>}
-                {!user.isActive && <span className="badge bg-danger">Inactive</span>}
-              </div>
-              {/* TODO add the num rendering */}
-
-            </div>
-          )
-          )}
+        <div className="container py-4">
+          {globalState.user.isManager && <Row className="mb-3">
+            <Col>
+              <Button variant="primary" onClick={() => setShowAssignModal(true)}>Assign User to Gabbay</Button>
+            </Col>
+          </Row>}
+          <Row>
+            {list.map((user, index) => (
+              <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-4">
+                <Card onClick={() => shower(index)} style={{ cursor: 'pointer' }}>
+                  <Card.Body>
+                    <Card.Title>
+                      {user.degree || ''} {`${user.firstName} ${user.lastName}`}
+                      {user.isGabbay && <Badge bg="warning" className="ms-2">Gabbay</Badge>}
+                    </Card.Title>
+                    {user.show && (
+                      <>
+                        {user.email && <Card.Text>{user.email}</Card.Text>}
+                        {user.cellPhone && <Card.Text>{user.cellPhone}</Card.Text>}
+                        {user.homePhone && <Card.Text>{user.homePhone}</Card.Text>}
+                        {(user.street || user.houseNum || user.apt) && (
+                          <Card.Text>{`${user.street || ''} ${user.houseNum || ''}/${user.apt || ''} ${user.flore || ''}${user.flore ? '-th floor' : ''}`}</Card.Text>
+                        )}
+                        {(user.neighborhood || user.city || user.country) && (
+                          <Card.Text>{`${user.neighborhood || ''}, ${user.city || ''}, ${user.country || ''}`}</Card.Text>
+                        )}
+                        {user.instructions && <Card.Text className="overflow-auto">{user.instructions}</Card.Text>}
+                      </>
+                    )}
+                  </Card.Body>
+                  <Card.Footer className="d-flex justify-content-between align-items-center">
+                    <div>
+                      {user.isManager && <Badge bg="primary" className="me-1">Manager</Badge>}
+                      {user.isActive ? (
+                        <Badge bg="success">Active</Badge>
+                      ) : (
+                        <Badge bg="danger">Inactive</Badge>
+                      )}
+                    </div>
+                    <div>
+                      <Button variant="link" size="sm" onClick={(e) => { e.stopPropagation(); handleEditClick(user); }}>
+                        <i className="bi bi-pencil-square fs-5"></i>
+                      </Button>
+                      <Button variant="link" size="sm" onClick={(e) => { e.stopPropagation(); handleDeleteClick(user.Id); }}>
+                        <i className="bi bi-trash fs-5"></i>
+                      </Button>
+                    </div>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </div>
       )}
       {currentUser && (
@@ -213,5 +244,6 @@ export default function ContactsList() {
           </Modal.Footer>
         </Modal>
       )}
-    </div>)
-};
+    </div>
+  );
+}
