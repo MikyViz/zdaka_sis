@@ -50,7 +50,7 @@ function Login() {
     try {
       const loginResponse = await axios.post('http://localhost:8080/users/login/', userData);
       setError(false);
-      console.log(`Server response 👉 ${loginResponse.data}`);
+      // console.log(`Server response 👉 ${loginResponse.data}`);
       // updateUser(loginResponse.data)
       localStorage.setItem(`token`, loginResponse.data.token);
       navigate('/account');

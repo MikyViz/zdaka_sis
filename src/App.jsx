@@ -11,6 +11,7 @@ import Contacts from './pages/Contacts';
 import Account from './pages/Account';
 import Dashboard from './pages/Dashboard';
 import ContactsList from './pages/ContactsList';
+import Donats from './pages/Donats';
 
 function App() {
   return (
@@ -19,14 +20,14 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
         {/* <Route path="/contacts" element={<Contacts />} /> */}
-
-        <Route path="/sidenavbar" element={<SideNavbar />} />
-        <Route path="/userform" element={<ContactForm />} />
+        {/* <Route path="/sidenavbar" element={<SideNavbar />} /> */}
+        {/* <Route path="/userform" element={<ContactForm />} /> */}
 
         <Route path="/account" element={<Account />}>
           <Route index element={<Dashboard />} />
           <Route path="contacts" element={<Contacts />} />
           <Route path="contactslist" element={<ContactsList />} />
+          <Route path="donats" element={<Donats />} />
         </Route>
 
       </Routes>

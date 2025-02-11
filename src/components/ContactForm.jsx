@@ -11,10 +11,10 @@ import {
   MDBBtnGroup,
 } from 'mdb-react-ui-kit';
 import { GlobalStateContext } from '../GlobalStateProvider';
-// import { Link, useNavigate } from 'react-router-dom';
-// const navigate = useNavigate();
 
 const ContactForm = function (props) {
+  // const [itsOK, setItsOk] = useState(false);
+  // const [isntOK, setIsntsOk] = useState(false);
   const { globalState, setGlobalState } = useContext(GlobalStateContext);
   const [formData, setFormData] = useState({
     Id: '',
@@ -73,9 +73,24 @@ const ContactForm = function (props) {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    props.req(formData);
+    try {
+      e.preventDefault();
+      props.req(formData);
+      setItsOk(true);
+      setIsntsOk(false);
+    } catch (error) {
+      setIsntsOk(true);
+      setItsOk(false);
+      console.log("🙅 "+ error);
+      
+    }
   };
+
+  if (!globalState.user) {
+    return <div className="spinner-border p-4 fs-3 " style={{color: 'white'}} role="status">
+    <span className="visually-hidden">Loading...</span>
+  </div>;
+  }
 
   return (
     <MDBContainer fluid className={`${props.styleClass} p-4 bg-light bg-gradient overflow-hidden`}>
@@ -120,7 +135,7 @@ const ContactForm = function (props) {
             <MDBInput type="tel" id="cellPhone" label="Phone" value={formData.cellPhone} onChange={handleChange} />
           </MDBCol>
         </MDBRow>
-        {(props.user.Id === globalState.user.Id) && <MDBRow>
+        {(props.user && (props.user.Id === globalState.user.Id)) && <MDBRow>
           <MDBCol>
             <MDBInput
               wrapperClass="mb-4"
@@ -140,7 +155,7 @@ const ContactForm = function (props) {
             <MDBSwitch id="isGabbay" label="Is gabbay" checked={formData.isGabbay} onChange={handleChange} />
           </MDBCol>}
           {globalState.user.isGabbay && <MDBCol md="3" className="form-outline" data-mdb-input-init style={{ maxWidth: "150px" }}>
-            <MDBInput type="number" label="Number" id="num" className="form-control" value={formData.number} onChange={handleChange} />
+            <MDBInput type="number" label="Number" id="num" className="form-control" value={formData.num} onChange={handleChange} />
           </MDBCol>}
         </MDBRow>
         <MDBInput className="mb-3" id="instructions" label="Instructions" value={formData.instructions} onChange={handleChange} />
@@ -157,6 +172,12 @@ const ContactForm = function (props) {
           {props.btnText}
         </MDBBtn>
       </form>
+      {/* {itsOK && (<div className="alert alert-success w-75 fs-3" role="alert">
+          Oky doky! 🎉🎉
+        </div>)}
+        {isntOK && (<div className="alert alert-danger w-75 fs-3" role="alert">
+          Something go wrong, bro...😥
+        </div>)} */}
     </MDBContainer>
   );
 };

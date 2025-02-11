@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import React, { useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,6 +18,8 @@ import '../styles/registration.css';
 import RegisterForm from '../components/RegisterForm';
 
 function Registration() {
+  const [itsOK, setItsOk] = useState(false);
+  const [isntOK, setIsntsOk] = useState(false);
   const registerFormRef = useRef();
   const navigate = useNavigate();
   const registerReq = async () => {
@@ -38,18 +40,21 @@ function Registration() {
         OrganizationId: orgId,
         isManager: true
       };
-      console.log(orgData);
-      console.log(managerData);
-      
+      // console.log(orgData);
+      // console.log(managerData);
+
       const orgResponse = await axios.post('http://localhost:8080/organizations/', orgData);
       const managerResponse = await axios.post('http://localhost:8080/users/register', managerData);
       localStorage.setItem("token", managerResponse.data.token);
       navigate('/account');
 
-      console.log('orgResponse from server:', orgResponse.data);
-      console.log('managerResponse from server:', managerResponse.data);
+      setIsntsOk(false);
+      setItsOk(true);
+      
     } catch (error) {
       console.error('Error sending data to server:', error);
+      setIsntsOk(true);
+      setItsOk(false);
     }
   };
 
@@ -93,7 +98,7 @@ function Registration() {
 
           <MDBCard className="my-5 bg-glass">
             <MDBCardBody className="p-5">
-              <RegisterForm ref={registerFormRef}/>
+              <RegisterForm ref={registerFormRef} />
               <MDBBtn className="w-100 mb-4" size="md" onClick={registerReq}>
                 sign up
               </MDBBtn>
@@ -141,6 +146,12 @@ function Registration() {
           </MDBCard>
         </MDBCol>
       </MDBRow>
+      {itsOK && <div className="alert alert-success w-75 fs-3" role="alert">
+        There we are! 🎉🎉
+      </div>}
+      {isntOK && <div className="alert alert-danger w-75 fs-3" role="alert">
+        Something go wrong, bro...😥
+      </div>}
     </MDBContainer>
   );
 }

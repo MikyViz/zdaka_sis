@@ -6,7 +6,7 @@ import '../styles/contacts.css';
 import { GlobalStateContext } from "../GlobalStateProvider";
 
 export default function ContactsList() {
-  const { globalState, setGlobalState, getData } = useContext(GlobalStateContext);
+  const { globalState, getData } = useContext(GlobalStateContext);
   const [list, setList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -52,18 +52,7 @@ export default function ContactsList() {
         try {
           const newList = [];
           if (globalState.user.isManager) {
-            // const orgUserResponse = await axios.get(`http://localhost:8080/orgsUsers/${globalState.user.orgId}`,
-            //   { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
-            // console.log('Response from server:', orgUserResponse?.data);
-            // for (const orgUser of orgUserResponse.data) {
-            //   const usersOfOrgResponse = await axios.get(`http://localhost:8080/users/${orgUser.UserId}`,
-            //     { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } }
-            //   );
-            //   usersOfOrgResponse.data.show = false;
-            //   newList.push(usersOfOrgResponse.data);
-            // }
-
-            const orgUserResponse = await axios.get(`http://localhost:8080/users/manager-contacts/${globalState.org}`,
+            const orgUserResponse = await axios.get(`http://localhost:8080/users/manager-contacts/${globalState.org.Id}`,
               { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
             console.log('Response from server:', orgUserResponse?.data);
             orgUserResponse.data.forEach((user) => {
@@ -73,7 +62,8 @@ export default function ContactsList() {
 
           }
           if (globalState.user.isGabbay) {
-            const assignedUsersResponse = await axios.get(`http://localhost:8080/users/assign-gabbay/${globalState.user.Id}`, { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
+            const assignedUsersResponse = await axios.get(`http://localhost:8080/users/assign-gabbay/${globalState.user.Id}`,
+              { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
             newList.push(...assignedUsersResponse.data);
           }
           setList(newList);

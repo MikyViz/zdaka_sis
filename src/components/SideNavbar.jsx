@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import '../styles/sideNavbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import logoPH from '../assets/your-logo-goes-here.gif';
+import { GlobalStateContext } from '../GlobalStateProvider';
 
 export default function Sidebar(props) {
   const navigate = useNavigate();
   const [openContacts, setOpenContacts] = useState(false);
+  const {globalState,setGlobalState, getData} = useContext(GlobalStateContext);
+
+  useEffect(() => {
+    getData();
+    }, []);
 
   const logout = (e) => {
     e.stopPropagation()
@@ -26,7 +32,6 @@ export default function Sidebar(props) {
         data-bs-target="#offcanvasRight"
         aria-controls="offcanvasRight"
       >
-        {/*         <span style={{fontSize: "30px"}}>🫎</span>👇 */}
         <img
           src={logoPH}
           className="rounded mx-auto d-block img-thumbnail"
@@ -55,7 +60,7 @@ export default function Sidebar(props) {
           />
 
           <h5 className="offcanvas-title d-block" id="offcanvasRightLabel">
-            Kupah name
+            {globalState.org?.name || `Kupah name`}
           </h5>
         </div>
         <div className="offcanvas-body">
@@ -93,7 +98,7 @@ export default function Sidebar(props) {
             </div>
 
             <Link
-              to="#"
+              to="/account/donats"
               className="list-group-item list-group-item-action px-3 border-0"
             >
               <i className="bi bi-cash-coin fs-2"></i>
