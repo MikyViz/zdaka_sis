@@ -9,6 +9,7 @@ const GlobalStateProvider = ({ children }) => {
   const [globalState, setGlobalState] = useState({
     user: null,
     org: null,
+    contacts: null,
   });
   const getData = async () => {
     const token = localStorage.getItem('token');

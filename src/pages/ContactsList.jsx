@@ -6,7 +6,7 @@ import '../styles/contacts.css';
 import { GlobalStateContext } from "../GlobalStateProvider";
 
 export default function ContactsList() {
-  const { globalState, getData } = useContext(GlobalStateContext);
+  const { globalState, setGlobalState, getData } = useContext(GlobalStateContext);
   const [list, setList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
