@@ -13,37 +13,70 @@ function Donats() {
             getData();
         }
         else {
-            const allUsersReq = async () => {
+            const fetchData = async () => {
                 try {
-                    const newList = [];
-                    if (globalState.user.isManager) {
-                        const orgUserResponse = await axios.get(`http://localhost:8080/users/manager-contacts/${globalState.org.Id}`,
-                            { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
-                        console.log('Response from server:', orgUserResponse?.data);
-                        orgUserResponse.data.forEach((user) => {
-                            user.show = false;
-                            newList.push(user);
-                        });
-
-                    }
-                    if (globalState.user.isGabbay) {
-                        const assignedUsersResponse = await axios.get(`http://localhost:8080/users/assign-gabbay/${globalState.user.Id}`,
-                            { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}`, } });
-                        newList.push(...assignedUsersResponse.data);
-                    }
-                    setList(newList);
-                    return newList;
-                }
-                catch (error) {
-                    console.error('Error sending data to server:', error);
+                    // Fetch donations and users in parallel
+                    const [donationsResponse, usersData] = await Promise.all([
+                        axios.get(`${url}/donats/currentMonth/${globalState.org.Id}`, 
+                            { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}` } }),
+                        fetchUsers()
+                    ]);
+                    
+                    const donations = donationsResponse.data;
+                    
+                    // Map donations to users
+                    const updatedUsers = usersData.map(user => {
+                        // Find donation for this user if exists
+                        const userDonation = donations.find(donation => donation.userId === user.Id);
+                        
+                        return {
+                            ...user,
+                            input: !userDonation, // If donation exists, show it instead of input
+                            currency: userDonation?.currency || user.currency,
+                            amount: userDonation?.amount || user.amount
+                        };
+                    });
+                    
+                    setList(updatedUsers);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
                 }
             };
-            allUsersReq();
+            
+            const fetchUsers = async () => {
+                const newList = [];
+                if (globalState.user.isManager) {
+                    const orgUserResponse = await axios.get(`${url}/users/manager-contacts/${globalState.org.Id}`,
+                        { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}` } });
+                    
+                    orgUserResponse.data.forEach((user) => {
+                        user.show = false;
+                        newList.push(user);
+                    });
+                }
+                
+                if (globalState.user.isGabbay) {
+                    const assignedUsersResponse = await axios.get(`${url}/users/assign-gabbay/${globalState.user.Id}`,
+                        { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}` } });
+                    newList.push(...assignedUsersResponse.data);
+                }
+                
+                return newList;
+            };
+            
+            fetchData();
         }
     }, [globalState.user, globalState.org]);
+
     const donation = async(index, amount)=> {
         try {
             if (list[index].currency && amount) {
+                setList(prevList => {
+                    const newList = [...prevList];
+                    newList[index].input = false;
+                    newList[index].amount = amount;
+                    return newList;
+                });
             const reqData = {
                 currency: list[index].currency,
                 amount: parseFloat(amount),
@@ -87,7 +120,7 @@ function Donats() {
                         <td>{user.firstName}</td>
                         <td>{user.lastName}</td>
                         <td>
-                            <InputGroup className="mb-3" >
+                            {user.input ? <InputGroup className="mb-3" >
                                 <DropdownButton
                                     variant="outline-secondary"
                                     title={<span style={{ color: 'white' }}>{user.currency || 'currency'}</span>}
@@ -97,8 +130,31 @@ function Donats() {
                                     <Dropdown.Item eventKey="$">$</Dropdown.Item>
                                     <Dropdown.Item eventKey="€">€</Dropdown.Item>
                                 </DropdownButton>
-                                <Form.Control placeholder="Enter donation amount" onKeyDown={(e) => { if (e.code === 'Enter') donation(index, e.target.value) }} />
-                            </InputGroup>
+                                <Form.Control 
+                                    placeholder="Enter donation amount" 
+                                    onKeyDown={(e) => { if (e.code === 'Enter') donation(index, e.target.value) }}
+                                    onBlur={(e) => {
+                                        if (e.target.value) {
+                                            donation(index, e.target.value);
+                                        } else {
+                                            setList(prevList => {
+                                                const newList = [...prevList];
+                                                newList[index].input = false;
+                                                return newList;
+                                            });
+                                        }
+                                    }}
+                                    autoFocus
+                                />
+                            </InputGroup> : 
+                             <InputGroup className="mb-3 text-light" onDoubleClick={()=>{setList(prevList=>{
+                                const newList = [...prevList];
+                                newList[index].input = true;
+                                return newList;
+                             })}}>
+                             <InputGroup.Text className="text-light" >{user.currency}</InputGroup.Text>
+                             <InputGroup.Text className="text-light">{user.amount}</InputGroup.Text>
+                           </InputGroup>}
                         </td>
                     </tr>
                 ))}
