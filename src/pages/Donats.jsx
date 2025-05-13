@@ -2,6 +2,7 @@ import { GlobalStateContext } from "../GlobalStateProvider";
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { Table, Form, InputGroup, Dropdown, DropdownButton } from 'react-bootstrap';
+import { getJewishMonthBoundaries } from '../utils/jewishCalendar';
 
 function Donats() {
     const { globalState, setGlobalState, getData } = useContext(GlobalStateContext);
@@ -15,10 +16,20 @@ function Donats() {
         else {
             const fetchData = async () => {
                 try {
+                    // Get Jewish month boundaries
+                    const { start, end } = getJewishMonthBoundaries();
+                    const startDate = start.toISOString().split('T')[0];
+                    const endDate = end.toISOString().split('T')[0];
+                    
                     // Fetch donations and users in parallel
                     const [donationsResponse, usersData] = await Promise.all([
-                        axios.get(`${url}/donats/currentMonth/${globalState.org.Id}`, 
-                            { headers: { 'authorization': `Bearer ${localStorage.getItem('token')}` } }),
+                        axios.get(`${url}/donats/currentMonth/${globalState.org.Id}`, {
+                            headers: { 'authorization': `Bearer ${localStorage.getItem('token')}` },
+                            params: {
+                                startDate,
+                                endDate
+                            }
+                        }),
                         fetchUsers()
                     ]);
                     
